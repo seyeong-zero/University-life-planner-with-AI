@@ -18,3 +18,4 @@ print(response.text)
 clean = "Only output the final result in the format: 'taskID, startTime, stopTime'. One session per line. No not add anything else. "
 print("=================================")
 print(model.generate_content(clean + str(response.text)).text)
+
