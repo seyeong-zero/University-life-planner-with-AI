@@ -9,6 +9,7 @@ import {
 import { format, parse, startOfWeek, getDay } from "date-fns";
 import { enGB } from "date-fns/locale/en-GB";
 import "react-big-calendar/lib/css/react-big-calendar.css";
+import AddEventModal from "../components/EventModal"; 
 
 const locales = { "en-GB": enGB };
 
@@ -19,7 +20,6 @@ const localizer = dateFnsLocalizer({
   getDay,
   locales,
 });
-
 
 function CustomToolbar({ label, onNavigate, onView, view }: any) {
   const views = ["month", "week", "day"];
@@ -49,7 +49,7 @@ function CustomToolbar({ label, onNavigate, onView, view }: any) {
           <button
             key={v}
             onClick={() => onView(v)}
-            className={`px-4 py-2 rounded-full transition-all shadow-sm ${
+            className={`px-4 py-2 rounded-full transition-all shadow-sm hover:shadow-md hover:scale-105 ${
               view === v
                 ? "bg-[var(--color-d)] text-[var(--color-a)]"
                 : "bg-[var(--color-c)] text-white hover:bg-[var(--color-b)]"
@@ -65,8 +65,25 @@ function CustomToolbar({ label, onNavigate, onView, view }: any) {
 
 export default function CalendarPage() {
   const [events, setEvents] = useState<Event[]>([
-
+    {
+      title: "CS Assignment Due",
+      start: new Date(2025, 9, 20, 10, 0),
+      end: new Date(2025, 9, 20, 12, 0),
+    },
   ]);
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const handleAddEvent = (eventData: { title: string; start: string; end: string }) => {
+    setEvents([
+      ...events,
+      {
+        title: eventData.title,
+        start: new Date(eventData.start),
+        end: new Date(eventData.end),
+      },
+    ]);
+  };
 
   return (
     <div className="space-y-6">
@@ -75,7 +92,7 @@ export default function CalendarPage() {
         <h2 className="text-2xl font-semibold text-white">Your Calendar</h2>
         <button
           className="px-4 py-2 bg-[var(--color-d)] text-[var(--color-a)] rounded-lg hover:bg-[var(--color-e)] transition"
-          onClick={() => alert("Add new task modal coming soon!")}
+          onClick={() => setIsModalOpen(true)}
         >
           + Add Task
         </button>
@@ -94,6 +111,13 @@ export default function CalendarPage() {
           }}
         />
       </div>
+
+      {/* Modal */}
+      <AddEventModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onAddEvent={handleAddEvent}
+      />
     </div>
   );
 }
