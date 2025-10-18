@@ -1,39 +1,37 @@
-
+// app/layout.tsx
+import type { ReactNode } from "react";
+import Link from "next/link";
+import { Calendar, Home } from "lucide-react";
 import "./globals.css";
 
-// import { Pixelify_Sans, Jersey_10 } from "next/font/google";
+export default function RootLayout({ children }: { children: ReactNode }) {
+  const navItems = [
+    { name: "Dashboard", path: "/", icon: <Home size={20} /> },
+    { name: "Calendar", path: "/calendar", icon: <Calendar size={20} /> },
+  ];
 
-// const pixelify = Pixelify_Sans({
-//   subsets: ["latin"],
-//   display: 'swap',
-//   variable: "--font-pixelify",
-// });
-
-// const jersey = Jersey_10({
-//   subsets: ["latin"],
-//   weight: "400",
-//   display: 'swap',
-//   variable: "--font-jersey",
-// });
-
-export const metadata = {
-  title: "University Planner",
-  description: "AI Agent for your university life",
-  icons: {
-    icon: "/favicon.png", 
-  },
-};
-
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
   return (
-    <html lang="en" className={``}>
-      <body className="bg-white text-gray-900 flex flex-col min-h-screen">
+    <html lang="en">
+      <body className="flex min-h-screen">
+        {/* Sidebar */}
+        <aside className="w-64 bg-purplegrey text-black flex flex-col pt-8 px-4">
+          <h1 className="text-2xl font-semibold mb-8">UniPlanner</h1>
+          <nav className="flex flex-col gap-2">
+            {navItems.map((item) => (
+              <Link
+                key={item.path}
+                href={item.path}
+                className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-bluegrey transition"
+              >
+                {item.icon}
+                <span>{item.name}</span>
+              </Link>
+            ))}
+          </nav>
+        </aside>
 
-        <main className="flex-grow">{children}</main>
+        {/* Main content */}
+        <main className="flex-1 bg-gray-50 p-6 overflow-y-auto">{children}</main>
       </body>
     </html>
   );
