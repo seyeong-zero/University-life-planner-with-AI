@@ -1,15 +1,14 @@
 @import "tailwindcss";
 
 @theme {
-  --color-a: #ddd7e0;
-  --color-b: #f5ede4;
-  --color-c: #e4f5f1;
-  --color-d: #e4f2f5;
-  --color-e: #e8e4f5;
-  --color-ocean: #a9bcd9;
-
+  --color-a: #f2e9e4; 
+  --color-b: #c9ada7; 
+  --color-c: #9a8c98;
+  --color-d: #4a4e69; 
+  --color-e: #22223b;
 }
 
 html {
   scroll-behavior: smooth;
 }
+
