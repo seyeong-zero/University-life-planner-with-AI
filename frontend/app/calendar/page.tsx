@@ -11,14 +11,14 @@ interface TaskEvent {
 
 
 export default async function CalendarPage() {
-  // Fetch events from Supabase
+
   const { data, error } = await supabase
     .from("coursework")
     .select("*")
-    .order("start", { ascending: true });
+    .order("deadline", { ascending: true });
 
   if (error) {
-    console.error(error);
+    console.error()
   }
 
   // map dates to strings

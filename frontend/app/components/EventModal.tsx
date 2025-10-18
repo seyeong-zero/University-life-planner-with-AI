@@ -37,6 +37,15 @@ export default function EventModal({
       console.error("Error inserting event:", error);
     } else {
       console.log("Event inserted:", data);
+      setForm({
+        title: "",
+        type: "",
+        description: "",
+        deadline: "",
+        estimatedTime: 1,
+        strictness: false,
+      });
+
     }
   };
 
