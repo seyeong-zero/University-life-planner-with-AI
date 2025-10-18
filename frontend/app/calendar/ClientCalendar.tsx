@@ -6,6 +6,7 @@ import { format, parse, startOfWeek, getDay } from "date-fns";
 import { enGB } from "date-fns/locale/en-GB";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import EventModal from "../components/WorkModal";
+import CustomToolbar from "../components/CustomToolbar";
 
 interface Props {
   initialEvents: CustomEvent[];
@@ -62,6 +63,7 @@ export default function CalendarClient({ initialEvents }: Props) {
           events={events}
           startAccessor="start"
           endAccessor="end"
+          components={{ toolbar: CustomToolbar }}
           style={{ height: 600 }}
           eventPropGetter={(event: CustomEvent) => {
             let backgroundColor = "var(--color-b)";
