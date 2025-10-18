@@ -14,14 +14,14 @@ export default function RootLayout({ children }: { children: ReactNode }) {
     <html lang="en">
       <body className="flex min-h-screen">
         {/* Sidebar */}
-        <aside className="w-64 bg-purplegrey text-black flex flex-col pt-8 px-4">
+        <aside className="w-64 bg-a text-black flex flex-col pt-8 px-4">
           <h1 className="text-2xl font-semibold mb-8">UniPlanner</h1>
           <nav className="flex flex-col gap-2">
             {navItems.map((item) => (
               <Link
                 key={item.path}
                 href={item.path}
-                className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-bluegrey transition"
+                className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-a transition"
               >
                 {item.icon}
                 <span>{item.name}</span>

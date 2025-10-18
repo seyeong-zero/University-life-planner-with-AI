@@ -31,12 +31,12 @@ export default function CalendarPage() {
 
   return (
     <div className="space-y-6">
-      <div className="bg-cream p-4 rounded-xl shadow flex items-center justify-between">
+      <div className="bg-a p-4 rounded-xl shadow flex items-center justify-between">
         <h2 className="text-2xl font-semibold text-black">
            Your Calendar
         </h2>
         <button
-          className="px-4 py-2 bg-raspberry text-black rounded-lg hover:bg-mauve transition"
+          className="px-4 py-2 bg-raspberry text-black rounded-lg hover:bg-a transition"
           onClick={() => alert("Add new task modal coming soon!")}
         >
           + Add Task
