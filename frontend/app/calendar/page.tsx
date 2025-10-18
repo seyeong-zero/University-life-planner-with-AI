@@ -33,3 +33,4 @@ export default async function CalendarPage() {
 
   return <CalendarClient initialEvents={events as any[]} />;
 }
+
