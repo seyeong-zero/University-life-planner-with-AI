@@ -1,17 +1,23 @@
 "use client";
 
 import { useState } from "react";
-import {
-  Calendar as BigCalendar,
-  dateFnsLocalizer,
-  Event,
-} from "react-big-calendar";
+import { Calendar as BigCalendar, dateFnsLocalizer, Event } from "react-big-calendar";
 import { format, parse, startOfWeek, getDay } from "date-fns";
 import { enGB } from "date-fns/locale/en-GB";
 import "react-big-calendar/lib/css/react-big-calendar.css";
-import AddEventModal from "../components/EventModal"; 
+import EventModal from "../components/EventModal"; // 👈 import modal
+
+interface CustomEvent {
+  title: string;
+  start: Date;
+  end: Date;
+  type: string;
+  description?: string;
+  strictness?: boolean;
+}
 
 const locales = { "en-GB": enGB };
+
 
 const localizer = dateFnsLocalizer({
   format,
@@ -64,23 +70,39 @@ function CustomToolbar({ label, onNavigate, onView, view }: any) {
 }
 
 export default function CalendarPage() {
-  const [events, setEvents] = useState<Event[]>([
+  const [events, setEvents] = useState<CustomEvent[]>([
     {
       title: "CS Assignment Due",
       start: new Date(2025, 9, 20, 10, 0),
       end: new Date(2025, 9, 20, 12, 0),
+      type: "Assignment",
+      description: "Finish coding assignment",
+      strictness: true,
     },
   ]);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const handleAddEvent = (eventData: { title: string; start: string; end: string }) => {
+  const handleAddEvent = (eventData: {
+    title: string;
+    type: string;
+    description: string;
+    deadline: string;
+    estimatedTime: number;
+    strictness: boolean;
+  }) => {
+    const start = new Date(eventData.deadline);
+    const end = new Date(start.getTime() + eventData.estimatedTime * 60 * 60 * 1000);
+
     setEvents([
       ...events,
       {
         title: eventData.title,
-        start: new Date(eventData.start),
-        end: new Date(eventData.end),
+        start,
+        end,
+        type: eventData.type,
+        description: eventData.description,
+        strictness: eventData.strictness,
       },
     ]);
   };
@@ -102,18 +124,16 @@ export default function CalendarPage() {
       <div className="bg-white rounded-xl shadow border border-[var(--color-c)] overflow-hidden">
         <BigCalendar
           localizer={localizer}
-          events={events}
+          events={events as any} // or events as Event[]
           startAccessor="start"
           endAccessor="end"
           style={{ height: 600 }}
-          components={{
-            toolbar: CustomToolbar,
-          }}
+          components={{ toolbar: CustomToolbar }}
         />
       </div>
 
       {/* Modal */}
-      <AddEventModal
+      <EventModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         onAddEvent={handleAddEvent}

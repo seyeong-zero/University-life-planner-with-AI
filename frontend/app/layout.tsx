@@ -21,7 +21,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
               <Link
                 key={item.path}
                 href={item.path}
-                className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-a transition"
+                className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-b transition"
               >
                 {item.icon}
                 <span>{item.name}</span>
