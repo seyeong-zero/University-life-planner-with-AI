@@ -25,6 +25,7 @@ export default async function CalendarPage() {
   const events: TaskEvent[] =
     data?.map((e: any) => ({
       title: e.title,
+      type: e.type,
       start: e.start,
       deadline:e.string,
       description: e.description,
