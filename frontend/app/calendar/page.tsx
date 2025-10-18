@@ -1,4 +1,3 @@
-"use client";
 
 import { useState } from "react";
 import { Calendar as BigCalendar, dateFnsLocalizer, Event } from "react-big-calendar";
