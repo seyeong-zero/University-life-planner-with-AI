@@ -7,15 +7,6 @@ import { enGB } from "date-fns/locale/en-GB";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import EventModal from "../components/EventModal";
 
-interface CustomEvent {
-  title: string;
-  start: string | Date;
-  end: string | Date;
-  type: string;
-  description?: string;
-  strictness?: boolean;
-}
-
 interface Props {
   initialEvents: CustomEvent[];
 }
@@ -31,37 +22,8 @@ const localizer = dateFnsLocalizer({
 });
 
 export default function CalendarClient({ initialEvents }: Props) {
-  const [events, setEvents] = useState<CustomEvent[]>(
-    initialEvents.map((e) => ({ ...e, start: new Date(e.start), end: new Date(e.end) }))
-  );
-  const [isModalOpen, setIsModalOpen] = useState(false);
-
-  const handleAddEvent = (eventData: {
-    title: string;
-    type: string;
-    description: string;
-    deadline: string;
-    estimatedTime: number;
-    strictness: boolean;
-  }) => {
-    const start = new Date(eventData.deadline);
-    const end = new Date(start.getTime() + eventData.estimatedTime * 60 * 60 * 1000);
-
-    setEvents([
-      ...events,
-      {
-        title: eventData.title,
-        start,
-        end,
-        type: eventData.type,
-        description: eventData.description,
-        strictness: eventData.strictness,
-      },
-    ]);
-
-    // optionally: insert into Supabase here
-    // supabaseClient.from("events").insert([{ ... }])
-  };
+    const [events, setEvents] = useState<CustomEvent[]>(initialEvents || []);
+    const [isModalOpen, setIsModalOpen] = useState(false);
 
   return (
     <div className="space-y-6">
@@ -88,7 +50,6 @@ export default function CalendarClient({ initialEvents }: Props) {
       <EventModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        onAddEvent={handleAddEvent}
       />
     </div>
   );

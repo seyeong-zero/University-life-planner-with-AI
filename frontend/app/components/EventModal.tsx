@@ -1,25 +1,16 @@
 
 import React from "react";
+import { supabase } from "@/lib/supabaseClient";
 
 interface EventModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onAddEvent: (event: {
-    title: string;
-    type: string;
-    description: string;
-    deadline: string;
-    estimatedTime: number;
-    strictness: boolean;
-  }) => void;
 }
 
-
 export default function EventModal({
-  isOpen,
-  onClose,
-  onAddEvent,
-}: EventModalProps) {
+    isOpen,
+    onClose,
+  }: EventModalProps) {
   const [form, setForm] = React.useState({
     title: "",
     type: "",
@@ -29,21 +20,24 @@ export default function EventModal({
     strictness: false,
   });
 
-  const handleSubmit = () => {
-    if (!form.title || !form.type || !form.deadline || !form.estimatedTime) {
-      alert("Please fill in all required fields!");
-      return;
+  const handleAddEvent = async () => {
+    // Insert into Supabase
+    const { data, error } = await supabase.from("coursework").insert([
+      {
+        title: form.title,
+        type: form.type,
+        description: form.description,
+        deadline: form.deadline,
+        est_hours: form.estimatedTime,
+        strictness: form.strictness,
+      },
+    ]);
+
+    if (error) {
+      console.error("Error inserting event:", error);
+    } else {
+      console.log("Event inserted:", data);
     }
-    onAddEvent(form);
-    setForm({
-      title: "",
-      type: "",
-      description: "",
-      deadline: "",
-      estimatedTime: 1,
-      strictness: false,
-    });
-    onClose();
   };
 
   if (!isOpen) return null;
@@ -56,81 +50,54 @@ export default function EventModal({
         </h3>
 
         {/* Title */}
-        <div>
-          <label className="block text-sm font-medium text-[var(--color-e)] mb-1">
-            Title
-          </label>
-          <input
-            type="text"
-            placeholder="Task title"
-            className="w-full p-2 rounded-lg border border-[var(--color-c)] focus:outline-none focus:ring-2 focus:ring-[var(--color-b)]"
-            value={form.title}
-            onChange={(e) => setForm({ ...form, title: e.target.value })}
-          />
-        </div>
+        <input
+          type="text"
+          placeholder="Task title"
+          className="w-full p-2 rounded-lg border border-[var(--color-c)] focus:outline-none focus:ring-2 focus:ring-[var(--color-b)]"
+          value={form.title}
+          onChange={(e) => setForm({ ...form, title: e.target.value })}
+        />
 
         {/* Type */}
-        <div>
-          <label className="block text-sm font-medium text-[var(--color-e)] mb-1">
-            Type
-          </label>
-          <select
-            className="w-full p-2 rounded-lg border border-[var(--color-c)] bg-white focus:outline-none focus:ring-2 focus:ring-[var(--color-b)]"
-            value={form.type}
-            onChange={(e) => setForm({ ...form, type: e.target.value })}
-          >
-            <option value="">Select Task Type</option>
-            <option value="Assignment">📚 Assignment</option>
-            <option value="Exam">🧠 Exam</option>
-            <option value="Meeting">💬 Meeting</option>
-            <option value="Personal">🌸 Personal</option>
-            <option value="Other">✨ Other</option>
-          </select>
-        </div>
+        <select
+          className="w-full p-2 rounded-lg border border-[var(--color-c)] focus:outline-none focus:ring-2 focus:ring-[var(--color-b)]"
+          value={form.type}
+          onChange={(e) => setForm({ ...form, type: e.target.value })}
+        >
+          <option value="">Select Task Type</option>
+          <option value="Work">Work</option>
+          <option value="Exam">Exam</option>
+          <option value="Event">Event</option>
+        </select>
 
         {/* Description */}
-        <div>
-          <label className="block text-sm font-medium text-[var(--color-e)] mb-1">
-            Description
-          </label>
-          <textarea
-            placeholder="Add some details about this task..."
-            className="w-full p-2 rounded-lg border border-[var(--color-c)] focus:outline-none focus:ring-2 focus:ring-[var(--color-b)]"
-            rows={3}
-            value={form.description}
-            onChange={(e) => setForm({ ...form, description: e.target.value })}
-          />
-        </div>
+        <textarea
+          placeholder="Task description"
+          className="w-full p-2 rounded-lg border border-[var(--color-c)] focus:outline-none focus:ring-2 focus:ring-[var(--color-b)]"
+          rows={3}
+          value={form.description}
+          onChange={(e) => setForm({ ...form, description: e.target.value })}
+        />
 
         {/* Deadline */}
-        <div>
-          <label className="block text-sm font-medium text-[var(--color-e)] mb-1">
-            Deadline
-          </label>
-          <input
-            type="datetime-local"
-            className="w-full p-2 rounded-lg border border-[var(--color-c)] focus:outline-none focus:ring-2 focus:ring-[var(--color-b)]"
-            value={form.deadline}
-            onChange={(e) => setForm({ ...form, deadline: e.target.value })}
-          />
-        </div>
+        <input
+          type="datetime-local"
+          className="w-full p-2 rounded-lg border border-[var(--color-c)] focus:outline-none focus:ring-2 focus:ring-[var(--color-b)]"
+          value={form.deadline}
+          onChange={(e) => setForm({ ...form, deadline: e.target.value })}
+        />
 
-        {/* Estimated Time */}
-        <div>
-          <label className="block text-sm font-medium text-[var(--color-e)] mb-1">
-            Estimated Time (hours)
-          </label>
-          <input
-            type="number"
-            min={0.5}
-            step={0.5}
-            className="w-full p-2 rounded-lg border border-[var(--color-c)] focus:outline-none focus:ring-2 focus:ring-[var(--color-b)]"
-            value={form.estimatedTime}
-            onChange={(e) =>
-              setForm({ ...form, estimatedTime: parseFloat(e.target.value) })
-            }
-          />
-        </div>
+        {/* Estimated Completion Time */}
+        <input
+          type="number"
+          min={0.5}
+          step={0.5}
+          className="w-full p-2 rounded-lg border border-[var(--color-c)] focus:outline-none focus:ring-2 focus:ring-[var(--color-b)]"
+          value={form.estimatedTime}
+          onChange={(e) =>
+            setForm({ ...form, estimatedTime: parseFloat(e.target.value) })
+          }
+        />
 
         {/* Strictness Toggle */}
         <div className="flex items-center justify-between">
@@ -164,7 +131,7 @@ export default function EventModal({
           </button>
           <button
             className="px-4 py-2 rounded-lg bg-[var(--color-d)] text-[var(--color-a)] hover:bg-[var(--color-e)] transition"
-            onClick={handleSubmit}
+            onClick={handleAddEvent}
           >
             Add Task
           </button>

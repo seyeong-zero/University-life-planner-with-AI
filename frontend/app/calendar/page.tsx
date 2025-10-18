@@ -1,19 +1,19 @@
 import { supabase } from "../../lib/supabaseClient";
 import CalendarClient from "./ClientCalendar";
 
-interface CustomEvent {
+interface TaskEvent {
   title: string;
-  start: string; 
-  end: string;
-  type: string;
-  description?: string;
-  strictness?: boolean;
+  deadline: string;          
+  type: string;         
+  description: string;  
+  strictness: boolean;
 }
+
 
 export default async function CalendarPage() {
   // Fetch events from Supabase
   const { data, error } = await supabase
-    .from("events")
+    .from("coursework")
     .select("*")
     .order("start", { ascending: true });
 
@@ -22,15 +22,14 @@ export default async function CalendarPage() {
   }
 
   // map dates to strings
-  const events: CustomEvent[] =
+  const events: TaskEvent[] =
     data?.map((e: any) => ({
       title: e.title,
       start: e.start,
-      end: e.end,
-      type: e.type,
+      deadline:e.string,
       description: e.description,
       strictness: e.strictness,
     })) || [];
 
-  return <CalendarClient initialEvents={events} />;
+  return <CalendarClient initialEvents={events as any[]} />;
 }
