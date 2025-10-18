@@ -20,7 +20,7 @@ const localizer = dateFnsLocalizer({
   locales,
 });
 
-// 🪄 Custom Toolbar Component
+
 function CustomToolbar({ label, onNavigate, onView, view }: any) {
   const views = ["month", "week", "day"];
 
@@ -65,11 +65,7 @@ function CustomToolbar({ label, onNavigate, onView, view }: any) {
 
 export default function CalendarPage() {
   const [events, setEvents] = useState<Event[]>([
-    {
-      title: "CS Assignment Due",
-      start: new Date(2025, 9, 20, 10, 0),
-      end: new Date(2025, 9, 20, 12, 0),
-    },
+
   ]);
 
   return (
