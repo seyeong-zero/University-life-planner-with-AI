@@ -1,13 +1,14 @@
 // app/layout.tsx
 import type { ReactNode } from "react";
 import Link from "next/link";
-import { Calendar, Home } from "lucide-react";
+import { Calendar, Home, LightbulbIcon } from "lucide-react";
 import "./globals.css";
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   const navItems = [
     { name: "Dashboard", path: "/", icon: <Home size={20} /> },
     { name: "Calendar", path: "/calendar", icon: <Calendar size={20} /> },
+     { name: "Tips", path: "/tips", icon: <LightbulbIcon size={20} /> },
   ];
 
   return (
