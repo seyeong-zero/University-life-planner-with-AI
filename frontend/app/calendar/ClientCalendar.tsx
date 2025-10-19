@@ -9,7 +9,6 @@ import {
 import { format, parse, startOfWeek, getDay } from "date-fns";
 import { enGB } from "date-fns/locale/en-GB";
 import "react-big-calendar/lib/css/react-big-calendar.css";
-import * as workDistr from "../api/workDistr";
 
 import EventModal from "../components/WorkModal";
 import CustomToolbar from "../components/CustomToolbar";
@@ -74,6 +73,16 @@ export default function CalendarClient({ initialEvents }: Props) {
     );
   };
 
+  const handleHoursReduced = (taskid: string, newHours: number) => {
+  setEvents((prev) =>
+    prev.map((ev) =>
+      ev.id === `cw-${taskid}` || ev.id === taskid
+        ? { ...ev, est_hours: newHours }
+        : ev
+    )
+  );
+};
+
   // just to verify what types we have
   useMemo(() => {
     console.log("[Calendar types]", Array.from(new Set(events.map((e) => e.type))));
@@ -88,13 +97,6 @@ export default function CalendarClient({ initialEvents }: Props) {
           onClick={() => setIsAddOpen(true)}
         >
           + Add Task
-        </button>
-
-        <button
-          className="px-4 py-2 bg-[var(--color-d)] text-[var(--color-a)] rounded-lg hover:bg-[var(--color-e)] transition"
-          onClick={() => workDistr.reSchedule()}
-        >
-          Geminiii
         </button>
       </div>
 
@@ -119,31 +121,19 @@ export default function CalendarClient({ initialEvents }: Props) {
           }}
           eventPropGetter={(event: CustomEvent) => {
             const t = (event.type || "").toLowerCase();
-            let bg = "var(--color-b)";        // default background
-            let color = "var(--color-a)";     // default text color (dark text)
-
-            if (t === "coursework") {
-              bg = "var(--color-c)";          // amber-ish background
-              color = "var(--color-a)";       // dark text
-            } else if (t === "event") {
-              bg = "var(--color-d)";          // green/teal background
-              color = "var(--color-a)";       // light text
-            } else if (t === "ai task") {
-              bg = "var(--color-a)";          // purple background
-              color = "black";                // white text
-            }
-
+            let bg = "var(--color-b)";
+            let color = "white";
+            if (t === "coursework") bg = "var(--color-c)";
+            else if (t === "event") { bg = "var(--color-d)"; color = "var(--color-a)"; }
+            else if (t === "ai task") bg = "var(--color-a)";
             return {
               style: {
                 backgroundColor: bg,
-                color: color,
+                color,
                 borderRadius: "8px",
                 border: "none",
                 padding: "2px 6px",
                 fontWeight: 500,
-                whiteSpace: "nowrap",
-                overflow: "hidden",
-                textOverflow: "ellipsis",
               },
             };
           }}
@@ -172,33 +162,23 @@ export default function CalendarClient({ initialEvents }: Props) {
       />
 
       {/* AI Study Block popup */}
-      <AIBlockCard
-        open={!!selectedAI}
-        onClose={() => setSelectedAI(null)}
-        onRemoved={(/* id */) => {
-          // Remove only this clicked block using (taskid + start + end)
-          if (!selectedAI) return;
-          removeAISession(
-            selectedAI.id, // taskid
-            (selectedAI.start as Date).toISOString(),
-            (selectedAI.end as Date).toISOString()
-          );
-        }}
-        data={
-          selectedAI
-            ? {
-                // IMPORTANT: AI "id" here is the taskid (from page.tsx)
-                id: selectedAI.id,
-                title: selectedAI.title,
-                description: selectedAI.description,
-                startISO: (selectedAI.start as Date).toISOString(),
-                endISO: (selectedAI.end as Date).toISOString(),
-              }
-            : undefined
+    <AIBlockCard
+  open={!!selectedAI}
+  onClose={() => setSelectedAI(null)}
+  onRemoved={(taskid, s, e) => removeAISession(taskid, s, e)}
+  data={
+    selectedAI
+      ? {
+          id: selectedAI.id, // this is taskid from page.tsx
+          title: selectedAI.title,
+          description: selectedAI.description,
+          startISO: (selectedAI.start as Date).toISOString(),
+          endISO: (selectedAI.end as Date).toISOString(),
         }
-        // If your AI table is named "work_distribution", set it here:
-        tableName="work_distribution"
-      />
+      : undefined
+  }
+  tableName="work_distribution"
+/>
     </div>
   );
 }
