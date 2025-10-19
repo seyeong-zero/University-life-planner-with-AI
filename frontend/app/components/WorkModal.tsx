@@ -52,6 +52,47 @@ export default function WorkModal({ isOpen, onClose }: WorkModalProps) {
     }
   };
 
+  
+  const handleEvent = async () => {
+    const { data, error } = await supabase.from("events").insert([
+    {
+        title: form.title,
+        description: form.description,
+        start_at: form.startTime || null,
+        end_at: form.endTime || null,
+        },
+    ]);
+
+
+    if (error) {
+      if (error) {
+        console.group("❌ Supabase Insert Error");
+        console.error("Message:", error.message);
+        console.error("Details:", error.details);
+        console.error("Hint:", error.hint);
+        console.error("Full Error Object:", error);
+        console.groupEnd();
+        alert(`Insert failed: ${error.message}`);
+        return;
+      }
+    } else {
+      console.log("Event inserted:", data);
+      setForm({
+        title: "",
+        type: "",
+        description: "",
+        deadline: "",
+        startTime: "",
+        endTime: "",
+        estimatedTime: 1,
+        strictness: false,
+      });
+      onClose();
+    }
+  };
+
+  
+
   if (!isOpen) return null;
 
   return (
@@ -136,6 +177,21 @@ export default function WorkModal({ isOpen, onClose }: WorkModalProps) {
               value={form.deadline}
               onChange={(e) => setForm({ ...form, deadline: e.target.value })}
             />
+            {/* Buttons */}
+            <div className="flex justify-end gap-2 pt-4">
+              <button
+                className="px-4 py-2 rounded-lg bg-[var(--color-c)] text-white hover:bg-[var(--color-b)] transition"
+                onClick={onClose}
+              >
+                Cancel
+              </button>
+              <button
+                className="px-4 py-2 rounded-lg bg-[var(--color-d)] text-[var(--color-a)] hover:bg-[var(--color-e)] transition"
+                onClick={handleAddEvent}
+              >
+                Add Task
+              </button>
+            </div>
           </>
         )}
 
@@ -146,16 +202,6 @@ export default function WorkModal({ isOpen, onClose }: WorkModalProps) {
             value={form.deadline}
             onChange={(e) => setForm({ ...form, deadline: e.target.value })}
           />
-        )}
-
-        {form.type === "Event" && (
-          <input
-          type="text"
-          placeholder="Location"
-          className="w-full p-2 rounded-lg border border-[var(--color-c)] focus:outline-none focus:ring-2 focus:ring-[var(--color-b)]"
-          value={form.title}
-          onChange={(e) => setForm({ ...form, title: e.target.value })}
-        />
         )}
 
         {form.type === "Event" && (
@@ -174,24 +220,25 @@ export default function WorkModal({ isOpen, onClose }: WorkModalProps) {
               value={form.endTime}
               onChange={(e) => setForm({ ...form, endTime: e.target.value })}
             />
+            {/* Buttons */}
+            <div className="flex justify-end gap-2 pt-4">
+              <button
+                className="px-4 py-2 rounded-lg bg-[var(--color-c)] text-white hover:bg-[var(--color-b)] transition"
+                onClick={onClose}
+              >
+                Cancel
+              </button>
+              <button
+                className="px-4 py-2 rounded-lg bg-[var(--color-d)] text-[var(--color-a)] hover:bg-[var(--color-e)] transition"
+                onClick={handleEvent}
+              >
+                Add Task
+              </button>
+            </div>
           </>
         )}
 
-        {/* Buttons */}
-        <div className="flex justify-end gap-2 pt-4">
-          <button
-            className="px-4 py-2 rounded-lg bg-[var(--color-c)] text-white hover:bg-[var(--color-b)] transition"
-            onClick={onClose}
-          >
-            Cancel
-          </button>
-          <button
-            className="px-4 py-2 rounded-lg bg-[var(--color-d)] text-[var(--color-a)] hover:bg-[var(--color-e)] transition"
-            onClick={handleAddEvent}
-          >
-            Add Task
-          </button>
-        </div>
+        
       </div>
     </div>
   );
