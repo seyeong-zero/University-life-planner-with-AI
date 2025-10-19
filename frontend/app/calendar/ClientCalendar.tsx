@@ -17,6 +17,7 @@ interface Props {
 }
 
 export interface CustomEvent extends BigEvent {
+  id: string;
   title: string;
   start: Date;
   end: Date;
@@ -61,7 +62,6 @@ export default function CalendarClient({ initialEvents }: Props) {
       </div>
 
       <div className="bg-white rounded-xl shadow border border-[var(--color-c)] overflow-hidden">
-        
         <BigCalendar
           localizer={localizer}
           events={events}
@@ -77,6 +77,7 @@ export default function CalendarClient({ initialEvents }: Props) {
 
             if (event.type === "Coursework") backgroundColor = "var(--color-c)";
             else if (event.type === "Exam") backgroundColor = "var(--color-d)";
+            else if (event.type === "ai") backgroundColor = "var(--color-a)";
             else if (event.type === "Event") {
               backgroundColor = "var(--color-d)";
               textColor = "var(--color-a)";
