@@ -15,7 +15,7 @@ response = model.generate_content(setup + prompt + fake_Data + formatting)
 print(response.text)
 
 # clean data
-clean = "Only output the final result in the format: 'taskID, startTime, stopTime'. One session per line. Do not add anything else. "
+clean = "Only output the final result in the format: 'taskID, startTime, stopTime'. One session per line. No not add anything else. "
 print("=================================")
 print(model.generate_content(clean + str(response.text)).text)
 
