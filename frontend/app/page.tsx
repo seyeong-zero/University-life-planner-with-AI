@@ -1,14 +1,15 @@
-"use client";
-import { useRouter } from "next/navigation";
 
-export default function HomePage() {
-  const router = useRouter();
+import { supabase } from "@/lib/supabaseClient";
 
-  const handleView = (id: string) => {
-    router.push(`/tasks/${id}`);
-  };
+interface Deadlines {
+  title: string,
+  date: string,
+  description: string,
+  
+}
 
-  // Mock data using DB structure + location for events
+export default async function HomePage() {
+
   const tasks = [
     {
       uuid: "1a2b3c",
@@ -108,7 +109,7 @@ export default function HomePage() {
               return (
                 <li key={d.uuid} className="flex justify-between items-start">
                   <div className="w-full pr-3">
-                    <p className="font-semibold text-blue-700">{d.title}</p>
+                    <p className="font-semibold text-d">{d.title}</p>
                     <p className="text-sm text-gray-500 mb-1">
                       {d.strictness ? "Strict" : "Flexible"} • {d.est_hours}h estimated
                     </p>
@@ -119,20 +120,13 @@ export default function HomePage() {
                     <p className="text-xs text-gray-400 mb-2">{daysLeft} days left</p>
 
                     {/* Progress Bar */}
-                    <div className="w-full bg-gray-200 rounded-full h-2.5 mb-3">
+                    <div className="w-full bg-a rounded-full h-2.5 mb-3">
                       <div
-                        className="bg-blue-500 h-2.5 rounded-full"
+                        className="bg-b h-2.5 rounded-full"
                         style={{ width: `${percentage}%` }}
                       ></div>
                     </div>
                   </div>
-
-                  <button
-                    onClick={() => handleView(d.uuid)}
-                    className="text-sm bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded-xl shadow self-center"
-                  >
-                    View
-                  </button>
                 </li>
               );
             })}
@@ -166,13 +160,6 @@ export default function HomePage() {
                       ></div>
                     </div>
                   </div>
-
-                  <button
-                    onClick={() => handleView(e.uuid)}
-                    className="text-sm bg-purple-500 hover:bg-purple-600 text-white px-3 py-1 rounded-xl shadow self-center"
-                  >
-                    View
-                  </button>
                 </li>
               );
             })}
