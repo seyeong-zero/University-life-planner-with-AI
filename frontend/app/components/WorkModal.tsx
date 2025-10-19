@@ -2,6 +2,8 @@
 
 import React from "react";
 import { supabase } from "@/lib/supabaseClient";
+import * as workDistr from "../api/workDistr";
+
 
 interface WorkModalProps {
   isOpen: boolean;
@@ -48,7 +50,9 @@ export default function WorkModal({ isOpen, onClose }: WorkModalProps) {
         estimatedTime: 1,
         strictness: false,
       });
+      workDistr.reSchedule();
       onClose();
+      window.location.reload();
     }
   };
 
@@ -87,6 +91,7 @@ export default function WorkModal({ isOpen, onClose }: WorkModalProps) {
         estimatedTime: 1,
         strictness: false,
       });
+      workDistr.reSchedule();
       onClose();
     }
   };
