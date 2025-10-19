@@ -22,8 +22,8 @@ interface Props {
 export interface CustomEvent extends BigEvent {
   id: string;            // coursework: "cw-..." | event: "ev-..." | AI: taskid (uuid)
   title: string;
-  start: Date | string;  // we normalize to Date below
-  end: Date | string;
+  start: Date;  // we normalize to Date below
+  end: Date;
   type: string;          // "Coursework" | "Event" | "AI Task"
   description?: string;
   strictness?: boolean;
