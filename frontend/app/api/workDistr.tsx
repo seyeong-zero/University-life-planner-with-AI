@@ -119,4 +119,5 @@ export async function reSchedule() {
     console.error()
   }
   };
+  window.location.reload();
 }

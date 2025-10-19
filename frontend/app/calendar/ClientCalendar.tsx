@@ -9,6 +9,7 @@ import {
 import { format, parse, startOfWeek, getDay } from "date-fns";
 import { enGB } from "date-fns/locale/en-GB";
 import "react-big-calendar/lib/css/react-big-calendar.css";
+import * as workDistr from "../api/workDistr";
 
 import EventModal from "../components/WorkModal";
 import CustomToolbar from "../components/CustomToolbar";
@@ -87,6 +88,13 @@ export default function CalendarClient({ initialEvents }: Props) {
           onClick={() => setIsAddOpen(true)}
         >
           + Add Task
+        </button>
+
+        <button
+          className="px-4 py-2 bg-[var(--color-d)] text-[var(--color-a)] rounded-lg hover:bg-[var(--color-e)] transition"
+          onClick={() => workDistr.reSchedule()}
+        >
+          Geminiii
         </button>
       </div>
 
