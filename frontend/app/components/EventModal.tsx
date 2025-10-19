@@ -1,6 +1,7 @@
 
 import React from "react";
 import { supabase } from "@/lib/supabaseClient";
+import * as workDistr from "./../api/workDistr";
 
 interface EventModalProps {
   isOpen: boolean;
@@ -32,6 +33,9 @@ export default function EventModal({
         strictness: form.strictness,
       },
     ]);
+
+    // Call api to get work distribution
+    workDistr.test()
 
     if (error) {
       console.error("Error inserting event:", error);
