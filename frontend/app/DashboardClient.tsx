@@ -1,6 +1,6 @@
 "use client";
 import { useMemo, useState, useEffect } from "react";
-import { Calendar, Clock, CheckCircle } from "lucide-react";
+import { Calendar, Clock } from "lucide-react";
 import { supabase } from "@/lib/supabaseClient";
 
 type TaskCard = {
@@ -26,6 +26,7 @@ export default function DashboardClient({
 
   useEffect(() => setHydrated(true), []);
 
+
   const calculateDaysLeft = (deadline: string) => {
     const now = new Date();
     const end = new Date(deadline);
@@ -34,6 +35,7 @@ export default function DashboardClient({
       Math.ceil((end.getTime() - now.getTime()) / (1000 * 60 * 60 * 24))
     );
   };
+
 
   const calculateProgress = (hours: number, est_hours: number) => {
     if (!est_hours || est_hours <= 0) return 0;
@@ -46,7 +48,7 @@ export default function DashboardClient({
   );
   const events = useMemo(() => tasks.filter((t) => t.type === "event"), [tasks]);
 
- 
+  
   const handleAddHours = async (uuid: string) => {
     const added = parseFloat(inputHours);
     if (isNaN(added) || added <= 0) return alert("Please enter valid hours!");
@@ -61,7 +63,7 @@ export default function DashboardClient({
     await supabase
       .from("coursework")
       .update({ hours: added })
-      .eq("id", uuid);
+      .eq("id", uuid.replace(/^cw-/, ""));
   };
 
   if (!hydrated)
@@ -72,16 +74,16 @@ export default function DashboardClient({
       <h2 className="text-2xl font-semibold mb-4">Dashboard</h2>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        
+       
         <div className="bg-white shadow rounded-2xl p-4 h-[600px] overflow-y-auto">
           <h3 className="text-lg font-semibold mb-4">Coursework & AI Tasks</h3>
           <ul className="space-y-8">
-            {deadlines.map((d) => {
+            {deadlines.map((d, index) => {
               const progress = calculateProgress(d.hours, d.est_hours);
               const daysLeft = calculateDaysLeft(d.deadline);
               return (
                 <li
-                  key={`cw-${d.uuid}`}
+                  key={`${d.type}-${d.uuid}-${index}`} 
                   className="flex justify-between items-start bg-gray-50 rounded-2xl shadow-sm p-6 mb-6 border border-gray-100 hover:shadow-md transition-all duration-300"
                 >
                   <div className="w-full pr-3">
@@ -132,15 +134,15 @@ export default function DashboardClient({
           </ul>
         </div>
 
-        
+       
         <div className="bg-white shadow rounded-2xl p-4 h-[600px] overflow-y-auto">
           <h3 className="text-lg font-semibold mb-4">Events</h3>
           <ul className="space-y-8">
-            {events.map((e) => {
+            {events.map((e, index) => {
               const daysLeft = calculateDaysLeft(e.deadline);
               return (
                 <li
-                  key={`event-${e.uuid}`}
+                  key={`event-${e.uuid}-${index}`} 
                   className="flex justify-between items-start bg-gray-50 rounded-2xl shadow-sm p-6 mb-6 border border-gray-100 hover:shadow-md transition-all duration-300"
                 >
                   <div className="w-full pr-3">
@@ -161,7 +163,6 @@ export default function DashboardClient({
                       {daysLeft} days left
                     </p>
                   </div>
-                 
                 </li>
               );
             })}
