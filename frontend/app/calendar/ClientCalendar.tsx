@@ -5,7 +5,7 @@ import { Calendar as BigCalendar, dateFnsLocalizer, Event as BigEvent } from "re
 import { format, parse, startOfWeek, getDay } from "date-fns";
 import { enGB } from "date-fns/locale/en-GB";
 import "react-big-calendar/lib/css/react-big-calendar.css";
-import EventModal from "../components/EventModal";
+import WorkModal from "../components/WorkModal";
 import CustomToolbar from "../components/CustomToolbar";
 import * as workDistr from "./../api/workDistr";
 
@@ -93,7 +93,7 @@ export default function CalendarClient({ initialEvents }: Props) {
       </div>
 
       {/* Modal */}
-      <EventModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
+      <WorkModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
     </div>
   );
 }

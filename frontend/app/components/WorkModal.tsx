@@ -34,9 +34,6 @@ export default function EventModal({
       },
     ]);
 
-    // Call api to get work distribution
-    workDistr.test()
-
     if (error) {
       console.error("Error inserting event:", error);
     } else {
