@@ -38,6 +38,10 @@ export async function reSchedule() {
     data_string += String(item.deadline).substring(0,16) + ", ";
     data_string += item.strictness + ", ";
     data_string += (parseInt(item.est_hours)-parseInt(item.hour)) + "; ";
+    console.log(item.est_hours);
+    console.log(item.hour);
+    console.log((parseInt(item.est_hours)-parseInt(item.hour)) + "");
+    
   })
   data_string += " event: "
   data_ev?.forEach((item) => {

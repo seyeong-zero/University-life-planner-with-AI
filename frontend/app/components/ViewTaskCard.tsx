@@ -1,23 +1,24 @@
 "use client";
 import React, { useState } from "react";
+import { supabase } from "@/lib/supabaseClient";
 
 type Props = {
   open: boolean;
   onClose: () => void;
   data?: {
-    id: string;
+    id: string;                 // can be "cw-<uuid>" or "<uuid>"
     title: string;
-    deadlineISO?: string;   // ISO string
+    deadlineISO?: string;       // ISO string
     description?: string;
     est_hours?: number;
-    hours?: number;
-  
+    hours?: number;             // completed hours column
   };
-  onCompleted?: (id: string) => void; // optional – wire to delete later
+  onCompleted?: (id: string) => void; // parent removes from calendar
 };
 
 export default function ViewTaskCard({ open, onClose, data, onCompleted }: Props) {
   const [completed, setCompleted] = useState(false);
+  const [saving, setSaving] = useState(false);
   if (!open || !data) return null;
 
   const fmt = (iso?: string) =>
@@ -33,10 +34,34 @@ export default function ViewTaskCard({ open, onClose, data, onCompleted }: Props
         })
       : "—";
 
-  const handleToggle = () => {
+  const handleToggle = async () => {
     const next = !completed;
     setCompleted(next);
-    if (next && onCompleted) onCompleted(data.id);
+    if (!next) return;
+
+    try {
+      setSaving(true);
+
+      // If ids are like "cw-<uuid>", strip the prefix for DB delete
+      const uuid = data.id.startsWith("cw-") ? data.id.slice(3) : data.id;
+
+      const { error } = await supabase
+        .from("coursework")
+        .delete()
+        .eq("id", uuid);
+
+      if (error) throw error;
+
+      // Tell parent to remove this from the calendar and close
+      onCompleted?.(data.id);
+      onClose();
+    } catch (e) {
+      console.error(e);
+      alert("Could not delete this task. Please try again.");
+      setCompleted(false);
+    } finally {
+      setSaving(false);
+    }
   };
 
   return (
@@ -49,22 +74,20 @@ export default function ViewTaskCard({ open, onClose, data, onCompleted }: Props
         <p className="text-[var(--color-e)] mb-2">
           <span className="font-semibold">Deadline:</span> {fmt(data.deadlineISO)}
         </p>
-       
-         
-        {typeof data.est_hours === "number" ? (
-  <p className="text-[var(--color-e)] mb-2">
-    <span className="font-semibold">Estimated hours:</span>{" "}
-    {Number.isFinite(data.est_hours) ? data.est_hours : "—"}
-  </p>
-) : null}
 
-      {typeof data.hours === "number" && (
+        {typeof data.est_hours === "number" && (
+          <p className="text-[var(--color-e)] mb-2">
+            <span className="font-semibold">Estimated hours:</span>{" "}
+            {Number.isFinite(data.est_hours) ? data.est_hours : "—"}
+          </p>
+        )}
+
+        {typeof data.hours === "number" && (
           <p className="text-[var(--color-e)] mb-4">
             <span className="font-semibold">Hours completed:</span>{" "}
             {Number.isFinite(data.hours) ? data.hours : "—"}
           </p>
         )}
-
 
         {data.description && (
           <p className="text-[var(--color-e)]/90 whitespace-pre-wrap mb-4">
@@ -74,13 +97,19 @@ export default function ViewTaskCard({ open, onClose, data, onCompleted }: Props
 
         <div className="flex items-center justify-between mt-4">
           <label className="flex items-center gap-2 text-[var(--color-e)] font-medium">
-            <input type="checkbox" checked={completed} onChange={handleToggle} />
+            <input
+              type="checkbox"
+              checked={completed}
+              onChange={handleToggle}
+              disabled={saving}
+            />
             Fully Completed
           </label>
 
           <button
             onClick={onClose}
-            className="px-4 py-2 rounded-lg bg-[var(--color-d)] text-[var(--color-a)] hover:bg-[var(--color-e)] transition"
+            disabled={saving}
+            className="px-4 py-2 rounded-lg bg-[var(--color-d)] text-[var(--color-a)] hover:bg-[var(--color-e)] transition disabled:opacity-50"
           >
             Close
           </button>

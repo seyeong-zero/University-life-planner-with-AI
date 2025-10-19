@@ -152,6 +152,7 @@ export default function CalendarClient({ initialEvents }: Props) {
       <ViewTaskCard
         open={!!selectedTask}
         onClose={() => setSelectedTask(null)}
+        onCompleted={(id) => setEvents(prev => prev.filter(ev => ev.id !== id))}
         data={
           selectedTask
             ? {
