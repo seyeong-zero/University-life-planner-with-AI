@@ -1,19 +1,23 @@
 "use client";
 
 import { useState } from "react";
-import { Calendar as BigCalendar, dateFnsLocalizer, Event as BigEvent } from "react-big-calendar";
+import {
+  Calendar as BigCalendar,
+  dateFnsLocalizer,
+  Event as BigEvent,
+} from "react-big-calendar";
 import { format, parse, startOfWeek, getDay } from "date-fns";
 import { enGB } from "date-fns/locale/en-GB";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import WorkModal from "../components/WorkModal";
 import CustomToolbar from "../components/CustomToolbar";
-import * as workDistr from "./../api/workDistr";
 
 interface Props {
   initialEvents: CustomEvent[];
 }
 
 export interface CustomEvent extends BigEvent {
+  id: string;
   title: string;
   start: Date;
   end: Date;
@@ -33,7 +37,6 @@ const localizer = dateFnsLocalizer({
 });
 
 export default function CalendarClient({ initialEvents }: Props) {
-  // Ensure start/end are Date objects
   const [events, setEvents] = useState<CustomEvent[]>(
     initialEvents.map((e) => ({
       ...e,
@@ -44,9 +47,10 @@ export default function CalendarClient({ initialEvents }: Props) {
 
   const [isModalOpen, setIsModalOpen] = useState(false);
 
+  console.log("Events rendered:", events);
+
   return (
     <div className="space-y-6">
-      {/* Header */}
       <div className="bg-[var(--color-c)] p-4 rounded-xl shadow flex items-center justify-between">
         <h2 className="text-2xl font-semibold text-white">Your Calendar</h2>
         <button
@@ -58,34 +62,42 @@ export default function CalendarClient({ initialEvents }: Props) {
 
         <button
           className="px-4 py-2 bg-[var(--color-d)] text-[var(--color-a)] rounded-lg hover:bg-[var(--color-e)] transition"
-          onClick={() => workDistr.test()}
+          onClick={() => setIsModalOpen(true)}
         >
-          Call Gemini
+          Booty Call Gemi
         </button>
       </div>
 
-      {/* Calendar */}
       <div className="bg-white rounded-xl shadow border border-[var(--color-c)] overflow-hidden">
         <BigCalendar
           localizer={localizer}
           events={events}
           startAccessor="start"
           endAccessor="end"
+          defaultView="month"
+          defaultDate={new Date()}
           components={{ toolbar: CustomToolbar }}
           style={{ height: 600 }}
           eventPropGetter={(event: CustomEvent) => {
             let backgroundColor = "var(--color-b)";
-            if (event.type === "Work") backgroundColor = "var(--color-c)";
+            let textColor = "white";
+
+            if (event.type === "Coursework") backgroundColor = "var(--color-c)";
             else if (event.type === "Exam") backgroundColor = "var(--color-d)";
-            else if (event.type === "Event") backgroundColor = "var(--color-e)";
+            else if (event.type === "ai") backgroundColor = "var(--color-a)";
+            else if (event.type === "Event") {
+              backgroundColor = "var(--color-d)";
+              textColor = "var(--color-a)";
+            }
 
             return {
               style: {
                 backgroundColor,
-                color: "white",
+                color: textColor,
                 borderRadius: "8px",
                 border: "none",
-                padding: "2px 5px",
+                padding: "2px 6px",
+                fontWeight: 500,
               },
             };
           }}
