@@ -102,42 +102,47 @@ export default function CalendarClient({ initialEvents }: Props) {
 
       <div className="bg-white rounded-xl shadow border border-[var(--color-c)] overflow-hidden">
         <BigCalendar
-          localizer={localizer}
-          events={events}
-          startAccessor="start"
-          endAccessor="end"
-          defaultView="month"
-          defaultDate={new Date()}
-          components={{ toolbar: CustomToolbar }}
-          style={{ height: 600 }}
-          onSelectEvent={(evt) => {
-            const e = evt as CustomEvent;
-            const t = (e.type || "").toLowerCase();
-            if (t === "ai task") {
-              setSelectedAI(e);      // open AI popup
-            } else {
-              setSelectedTask(e);    // open coursework/event popup
-            }
-          }}
-          eventPropGetter={(event: CustomEvent) => {
-            const t = (event.type || "").toLowerCase();
-            let bg = "var(--color-b)";
-            let color = "white";
-            if (t === "coursework") bg = "var(--color-c)";
-            else if (t === "event") { bg = "var(--color-d)"; color = "var(--color-a)"; }
-            else if (t === "ai task") bg = "var(--color-a)";
-            return {
-              style: {
-                backgroundColor: bg,
-                color,
-                borderRadius: "8px",
-                border: "none",
-                padding: "2px 6px",
-                fontWeight: 500,
-              },
-            };
-          }}
-        />
+            localizer={localizer}
+            events={events}
+            startAccessor="start"
+            endAccessor="end"
+            defaultView="month"
+            defaultDate={new Date()}
+            components={{ toolbar: CustomToolbar }}
+            style={{ height: 600 }}
+            onSelectEvent={(evt) => {
+              const e = evt as CustomEvent;
+              const t = (e.type || "").toLowerCase();
+              if (t === "ai task") setSelectedAI(e);
+              else setSelectedTask(e);
+            }}
+            eventPropGetter={(event: CustomEvent) => {
+              const t = (event.type || "").toLowerCase();
+              let bg = "var(--color-b)";
+              let color = "white";
+
+              if (t === "coursework") bg = "var(--color-c)";
+              else if (t === "event") {
+                bg = "var(--color-d)";
+                color = "var(--color-a)";
+              } else if (t === "ai task") {
+                bg = "var(--color-c)";
+                color = "white";
+              }
+
+              return {
+                style: {
+                  backgroundColor: bg,
+                  color,
+                  borderRadius: "8px",
+                  border: "none",
+                  padding: "4px 8px",
+                  fontWeight: 500,
+                  fontSize: "0.9rem",
+                },
+              };
+            }}
+          />
       </div>
 
       {/* your "Add Task" form */}

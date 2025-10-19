@@ -6,11 +6,11 @@ import { se } from "date-fns/locale";
 const ai = new GoogleGenAI({ apiKey: "AIzaSyBEiKusGv-8XGvTu8xwPVryL_v6ZWPx6SY" });
 
 // prompting
-const setup = "Types of tasks - Work: a task which requires a certain number of hours to work on. This must be completed before its deadline if its strictness is true, but can be completed up to 5 days late if its strictness is false; Event: a task which cannot be moved. During its startTime and endTime, work sessions cannot happen. ";
+const setup = "Types of tasks - Work: a task which requires 'timeRequire' hours to work on. This must be completed before its deadline if its strictness is true, but can be completed up to 5 days late if its strictness is false; Event: a task which cannot be moved. During its startTime and endTime, other works cannot be worked on.";
 let dateTime = new Date()
 console.log(dateTime);
 
-const prompt = "Create a timeline for a student using the inputs with the following formats for work: taskID, deadline, strictness, timeRequire; and format for event: taskID, startTime, endTime. Split the work into sessions, each session should be between 2-5 hour long and between 12pm-6pm. Ensure the sessions time add up to the work's timeRequire. These sessions cannot coincide with any events. The sessions must start after "+dateTime+". During weekdays, try to limit the total time spent on work to 3 hours per day. During weekends, try to limit the total time spent on work to 6 hours per day. Prioritise the work with the earliest deadlines first.";
+const prompt = "Create a timeline without any clashes for a student using the work input in thr format: taskID, deadline, strictness, timeRequire; and event input in the format: taskID, startTime, endTime. Split the work into sessions of 2-5 hours within the time window of 12pm-6pm. Make sure the timeline does not have any clashes at all. The sessions must start after "+dateTime+". During weekdays, try to limit the total time spent on work to 3 hours per day. During weekends, try to limit the total time spent on work to 6 hours per day. Prioritise the work with the earliest deadlines first.";
 const formatting = " Use the following output format: 'taskID, startTime, stopTime' so that the number of hours required to work of each work is distributed well.";
 const clean = "Only output the final result in the format: 'taskID, startTime, stopTime'. One session per line. Do not add anything else. Do not add padding. ";
 

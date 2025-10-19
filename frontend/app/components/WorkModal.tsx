@@ -31,8 +31,6 @@ export default function WorkModal({ isOpen, onClose }: WorkModalProps) {
         deadline: form.deadline || form.startTime,
         est_hours: form.estimatedTime,
         strictness: form.strictness,
-        start_at: form.startTime || null,
-        end_at: form.endTime || null,
       },
     ]);
 
@@ -52,7 +50,6 @@ export default function WorkModal({ isOpen, onClose }: WorkModalProps) {
       });
       workDistr.reSchedule();
       onClose();
-      window.location.reload();
     }
   };
 
@@ -147,12 +144,15 @@ export default function WorkModal({ isOpen, onClose }: WorkModalProps) {
               min={0.5}
               step={0.5}
               className="w-full p-2 rounded-lg border border-[var(--color-c)] focus:outline-none focus:ring-2 focus:ring-[var(--color-b)]"
-              value={form.estimatedTime}
-              onChange={(e) =>
-                setForm({ ...form, estimatedTime: parseFloat(e.target.value) })
-              }
+              value={form.estimatedTime || ""}
+              onChange={(e) => {
+                const val = parseFloat(e.target.value);
+                setForm({
+                  ...form,
+                  estimatedTime: isNaN(val) ? 0 : val,
+                });
+              }}
             />
-
             {/* Strictness */}
             <div className="flex items-center justify-between">
               <label className="text-sm font-medium text-[var(--color-e)]">

@@ -8,7 +8,6 @@ export default function RootLayout({ children }: { children: ReactNode }) {
   const navItems = [
     { name: "Dashboard", path: "/", icon: <Home size={20} /> },
     { name: "Calendar", path: "/calendar", icon: <Calendar size={20} /> },
-     { name: "Tips", path: "/tips", icon: <LightbulbIcon size={20} /> },
   ];
 
   return (
@@ -16,7 +15,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
       <body className="flex min-h-screen">
         {/* Sidebar */}
         <aside className="w-64 bg-a text-black flex flex-col pt-8 px-4">
-          <h1 className="text-2xl font-semibold mb-8">UniPlanner</h1>
+          <h1 className="text-2xl font-semibold mb-8">Ctr+Plan</h1>
           <nav className="flex flex-col gap-2">
             {navItems.map((item) => (
               <Link
