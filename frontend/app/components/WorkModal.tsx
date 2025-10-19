@@ -97,6 +97,9 @@ export default function EventModal({
         />
 
         {/* Estimated Completion Time */}
+        <p>
+          Estimated number of hours to complete
+        </p>
         <input
           type="number"
           min={0.5}
