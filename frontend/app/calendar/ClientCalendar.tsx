@@ -10,6 +10,7 @@ import { format, parse, startOfWeek, getDay } from "date-fns";
 import { enGB } from "date-fns/locale/en-GB";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import WorkModal from "../components/WorkModal";
+import EventModal from "../components/EventModal";
 import CustomToolbar from "../components/CustomToolbar";
 import * as workDistr from "../api/workDistr";
 
@@ -38,7 +39,7 @@ const localizer = dateFnsLocalizer({
 });
 
 export default function CalendarClient({ initialEvents }: Props) {
-  const [events, setEvents] = useState<CustomEvent[]>(
+  const [events] = useState<CustomEvent[]>(
     initialEvents.map((e) => ({
       ...e,
       start: new Date(e.start),
@@ -47,11 +48,17 @@ export default function CalendarClient({ initialEvents }: Props) {
   );
 
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedEvent, setSelectedEvent] = useState<CustomEvent | null>(null);
 
-  console.log("Events rendered:", events);
+  // Called when an event is clicked
+  const handleSelectEvent = (event: CustomEvent) => {
+    setSelectedEvent(event);
+    setIsModalOpen(true);
+  };
 
   return (
     <div className="space-y-6">
+      {/* Header */}
       <div className="bg-[var(--color-c)] p-4 rounded-xl shadow flex items-center justify-between">
         <h2 className="text-2xl font-semibold text-white">Your Calendar</h2>
         <button
@@ -69,6 +76,7 @@ export default function CalendarClient({ initialEvents }: Props) {
         </button>
       </div>
 
+      {/* Calendar */}
       <div className="bg-white rounded-xl shadow border border-[var(--color-c)] overflow-hidden">
         <BigCalendar
           localizer={localizer}
@@ -79,6 +87,7 @@ export default function CalendarClient({ initialEvents }: Props) {
           defaultDate={new Date()}
           components={{ toolbar: CustomToolbar }}
           style={{ height: 600 }}
+          onSelectEvent={handleSelectEvent} // ← this opens the modal
           eventPropGetter={(event: CustomEvent) => {
             let backgroundColor = "var(--color-b)";
             let textColor = "white";
@@ -106,7 +115,12 @@ export default function CalendarClient({ initialEvents }: Props) {
       </div>
 
       {/* Modal */}
-      <WorkModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
+      {selectedEvent && (
+        <EventModal
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+        />
+      )}
     </div>
   );
 }

@@ -2,15 +2,15 @@
 import React from "react";
 import { supabase } from "@/lib/supabaseClient";
 
-interface EventModalProps {
+interface WorkModalProps {
   isOpen: boolean;
   onClose: () => void;
 }
 
-export default function EventModal({
+export default function WorktModal({
     isOpen,
     onClose,
-  }: EventModalProps) {
+  }: WorkModalProps) {
   const [form, setForm] = React.useState({
     title: "",
     type: "",
