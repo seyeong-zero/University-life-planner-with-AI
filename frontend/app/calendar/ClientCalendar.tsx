@@ -119,19 +119,31 @@ export default function CalendarClient({ initialEvents }: Props) {
           }}
           eventPropGetter={(event: CustomEvent) => {
             const t = (event.type || "").toLowerCase();
-            let bg = "var(--color-b)";
-            let color = "white";
-            if (t === "coursework") bg = "var(--color-c)";
-            else if (t === "event") { bg = "var(--color-d)"; color = "var(--color-a)"; }
-            else if (t === "ai task") bg = "var(--color-a)";
+            let bg = "var(--color-b)";        // default background
+            let color = "var(--color-a)";     // default text color (dark text)
+
+            if (t === "coursework") {
+              bg = "var(--color-c)";          // amber-ish background
+              color = "var(--color-a)";       // dark text
+            } else if (t === "event") {
+              bg = "var(--color-d)";          // green/teal background
+              color = "var(--color-a)";       // light text
+            } else if (t === "ai task") {
+              bg = "var(--color-a)";          // purple background
+              color = "black";                // white text
+            }
+
             return {
               style: {
                 backgroundColor: bg,
-                color,
+                color: color,
                 borderRadius: "8px",
                 border: "none",
                 padding: "2px 6px",
                 fontWeight: 500,
+                whiteSpace: "nowrap",
+                overflow: "hidden",
+                textOverflow: "ellipsis",
               },
             };
           }}
