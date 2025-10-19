@@ -161,6 +161,7 @@ export default function CalendarClient({ initialEvents }: Props) {
                 // show deadline as the event start (what page.tsx provided)
                 deadlineISO: (selectedTask.start as Date).toISOString(),
                 est_hours: (selectedTask as any).est_hours,
+                hours: (selectedTask as any).hours, 
               }
             : undefined
         }

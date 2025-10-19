@@ -1,7 +1,7 @@
 "use client";
 import React, { useState } from "react";
 import { supabase } from "@/lib/supabaseClient";
-
+import * as workDistr from "../api/workDistr";
 type Props = {
   open: boolean;
   onClose: () => void;
@@ -38,85 +38,53 @@ export default function AIBlockCard({
       timeZone: "UTC",
     });
 
+  // Duration of this AI session (in hours)
   const durationHrs =
     (new Date(data.endISO).getTime() - new Date(data.startISO).getTime()) /
     (1000 * 60 * 60);
 
   const handleToggleCompleted = async () => {
-  const next = !checked;
-  setChecked(next);
-  if (!next) return;
+    const next = !checked;
+    setChecked(next);
+    if (!next) return;
 
-  try {
-    setSaving(true);
+    try {
+      setSaving(true);
 
-    // 1) Try delete by the triple key directly.
-    // NOTE: no .select("id") because this table has no id column.
-    const { error: delErr1, count } = await supabase
-      .from(tableName)
-      .delete({ count: "exact" })                // ask for affected count
-      .eq("taskid", data.id)
-      .eq("time_start", data.startISO)
-      .eq("time_end", data.endISO);
-
-      let deleted = typeof count === "number" ? count > 0 : false;
-     if (!delErr1 && !deleted) {
-      // 1b) Fallback: find the closest matching row by window, then delete using
-      // the server's exact timestamps (avoids precision/timezone mismatch).
-      const startIso = new Date(data.startISO).toISOString();
-      const endIso   = new Date(data.endISO).toISOString();
-
-      const { data: candidates, error: findErr } = await supabase
+      // 1️⃣ Delete this AI block from work_distribution
+      const { error: delErr } = await supabase
         .from(tableName)
-        .select("taskid,time_start,time_end")
+        .delete()
         .eq("taskid", data.id)
-        .gte("time_start", startIso)
-        .lte("time_end", endIso)
-        .order("time_start", { ascending: true })
-        .limit(1);
+        .eq("time_start", data.startISO)
+        .eq("time_end", data.endISO);
 
-      if (findErr) throw findErr;
+      if (delErr) throw delErr;
 
-if (candidates && candidates.length > 0) {
-        const serverStart = candidates[0].time_start;
-        const serverEnd   = candidates[0].time_end;
-
-        const { error: delErr2, count: count2 } = await supabase
-          .from(tableName)
-          .delete({ count: "exact" })
-          .eq("taskid", data.id)
-          .eq("time_start", serverStart)
-          .eq("time_end", serverEnd);
-
-        if (delErr2) throw delErr2;
-        deleted = typeof count2 === "number" ? count2 > 0 : false;
-      }
-    }
-  if (!deleted) {
-      console.warn("AI block not found/deleted on server; aborting progress update.");
-      // Still close UI to avoid a stuck checkbox; remove this line if you prefer
-      onClose();
-      return;
-    }     
-      // 2) Subtract block duration from coursework.est_hours
+      // 2️⃣ Fetch the current logged hours from coursework
       const { data: cwData, error: fetchErr } = await supabase
         .from("coursework")
-        .select("est_hours")
+        .select("hours")
         .eq("id", data.id)
         .single();
+
       if (fetchErr) throw fetchErr;
 
-      const newEst = Math.max(0, Number(cwData?.est_hours ?? 0) - durationHrs);
+      const currentHours = Number(cwData?.hours ?? 0);
+      const newHours = currentHours + durationHrs;
 
+      // 3️⃣ Update coursework.hours with the added session hours
       const { error: updErr } = await supabase
         .from("coursework")
-        .update({ est_hours: newEst })
+        .update({ hours: newHours })
         .eq("id", data.id);
+
       if (updErr) throw updErr;
 
-      // 3) Update UI
+      // 4️⃣ Remove the AI block visually from the calendar
       onRemoved(data.id, data.startISO, data.endISO);
       onClose();
+      workDistr.reSchedule()
     } catch (e) {
       console.error(e);
       alert("Could not complete & remove this AI session.");

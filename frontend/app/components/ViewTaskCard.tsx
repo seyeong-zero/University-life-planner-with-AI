@@ -10,6 +10,7 @@ type Props = {
     deadlineISO?: string;   // ISO string
     description?: string;
     est_hours?: number;
+    hours?: number;
   
   };
   onCompleted?: (id: string) => void; // optional – wire to delete later
@@ -56,6 +57,14 @@ export default function ViewTaskCard({ open, onClose, data, onCompleted }: Props
     {Number.isFinite(data.est_hours) ? data.est_hours : "—"}
   </p>
 ) : null}
+
+      {typeof data.hours === "number" && (
+          <p className="text-[var(--color-e)] mb-4">
+            <span className="font-semibold">Hours completed:</span>{" "}
+            {Number.isFinite(data.hours) ? data.hours : "—"}
+          </p>
+        )}
+
 
         {data.description && (
           <p className="text-[var(--color-e)]/90 whitespace-pre-wrap mb-4">
