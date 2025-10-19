@@ -4,60 +4,70 @@ import DashboardClient from "./DashboardClient";
 type TaskCard = {
   uuid: string;
   title: string;
-  description?: string;
   est_hours: number;
+  hours: number; 
   deadline: string;
   created_at: string;
-  updated_at?: string;
   strictness: boolean;
-  type: "work" | "event";
-  location?: string;
+  type: "work" | "event" | "ai";
 };
 
 export default async function DashboardPage() {
-  // ✅ Fetch data from Supabase
+ 
   const { data: cw, error: cwError } = await supabase
     .from("coursework")
-    .select("*");
+    .select("*")
+    .order("deadline", { ascending: true });
 
-  const { data: ev, error: evError } = await supabase
-    .from("events")
-    .select("*");
+  if (cwError) console.error(" Error fetching coursework:", cwError);
 
-  if (cwError) console.error("❌ Error fetching coursework:", cwError);
-  if (evError) console.error("❌ Error fetching events:", evError);
+ 
+  const { data: ev, error: evError } = await supabase.from("events").select("*");
+  if (evError) console.error(" Error fetching events:", evError);
 
-  // ✅ Format Coursework
+  const { data: ai, error: aiError } = await supabase.from("work_distribution").select("*");
+  if (aiError) console.error("Error fetching AI tasks:", aiError);
+
+
   const cwTasks: TaskCard[] = (cw ?? []).map((c: any) => ({
-    uuid: c.id,
-    title: c.title ?? "Untitled coursework",
-    description: c.description ?? "",
+    uuid: `cw-${c.id}`,
+    title: c.title ?? "Untitled Coursework",
     est_hours: Number(c.est_hours ?? 0),
-    deadline: c.deadline_at ?? c.created_at,
+    hours: Number(c.hours ?? 0), 
+    deadline: c.deadline ?? c.created_at,
     created_at: c.created_at,
-    updated_at: c.updated_at,
     strictness: !!c.strictness,
     type: "work",
   }));
 
-  // ✅ Format Events
+
   const evTasks: TaskCard[] = (ev ?? []).map((e: any) => ({
-    uuid: e.id,
+    uuid: `ev-${e.id}`,
     title: e.title ?? "Event",
-    description: e.description ?? "",
     est_hours: 0,
+    hours: 0,
     deadline: e.start_at ?? e.created_at,
     created_at: e.created_at ?? e.start_at,
     strictness: false,
     type: "event",
-    location: e.location ?? "",
   }));
 
-  const courseworkEvents = cwTasks.map(e => ({ ...e, id: `cw-${e.uuid}` }));
-  const uniEvents =evTasks.map(e => ({ ...e, id: `ev-${e.uuid}` }));
-  const allEvents = [...courseworkEvents, ...uniEvents];
+
+  const aiTasks: TaskCard[] = (ai ?? []).map((a: any) => ({
+    uuid: `ai-${a.taskid}`,
+    title: `AI Task for ${a.taskid}`,
+    est_hours: Number(a.hours_required ?? 0),
+    hours: Number(a.hours_completed ?? 0),
+    deadline: a.time_end,
+    created_at: a.time_start,
+    strictness: false,
+    type: "ai",
+  }));
 
 
-  // ✅ Pass to Client Component
-  return <DashboardClient initialTasks={allEvents} />;
+  const allTasks: TaskCard[] = [...cwTasks, ...evTasks, ...aiTasks];
+
+
+  return <DashboardClient initialTasks={allTasks} />;
 }
+
