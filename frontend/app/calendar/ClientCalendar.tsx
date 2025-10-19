@@ -46,13 +46,18 @@ export default function CalendarClient({ initialEvents }: Props) {
     }))
   );
 
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  // State for modals
+  const [isWorkModalOpen, setIsWorkModalOpen] = useState(false);
+  const [isEventModalOpen, setIsEventModalOpen] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState<CustomEvent | null>(null);
 
-  // Called when an event is clicked
+  // When clicking on a calendar event
   const handleSelectEvent = (event: CustomEvent) => {
-    setSelectedEvent(event);
-    setIsModalOpen(true);
+    if (event.type === "Event") {
+      setSelectedEvent(event);
+      setIsEventModalOpen(true);
+    }
+    // Optionally handle other types if needed
   };
 
   return (
@@ -62,7 +67,7 @@ export default function CalendarClient({ initialEvents }: Props) {
         <h2 className="text-2xl font-semibold text-white">Your Calendar</h2>
         <button
           className="px-4 py-2 bg-[var(--color-d)] text-[var(--color-a)] rounded-lg hover:bg-[var(--color-e)] transition"
-          onClick={() => setIsModalOpen(true)}
+          onClick={() => setIsWorkModalOpen(true)}
         >
           + Add Task
         </button>
@@ -79,7 +84,7 @@ export default function CalendarClient({ initialEvents }: Props) {
           defaultDate={new Date()}
           components={{ toolbar: CustomToolbar }}
           style={{ height: 600 }}
-          onSelectEvent={handleSelectEvent} // ← this opens the modal
+          onSelectEvent={handleSelectEvent}
           eventPropGetter={(event: CustomEvent) => {
             let backgroundColor = "var(--color-b)";
             let textColor = "white";
@@ -106,11 +111,18 @@ export default function CalendarClient({ initialEvents }: Props) {
         />
       </div>
 
-      {/* Modal */}
+      {/* Work Modal */}
+      <WorkModal
+        isOpen={isWorkModalOpen}
+        onClose={() => setIsWorkModalOpen(false)}
+      />
+
+      {/* Event Modal */}
       {selectedEvent && (
         <EventModal
-          isOpen={isModalOpen}
-          onClose={() => setIsModalOpen(false)}
+          isOpen={isEventModalOpen}
+          onClose={() => setIsEventModalOpen(false)}
+          event={selectedEvent}
         />
       )}
     </div>
