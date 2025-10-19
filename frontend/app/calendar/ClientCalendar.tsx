@@ -40,10 +40,11 @@ const localizer = dateFnsLocalizer({
 
 export default function CalendarClient({ initialEvents }: Props) {
   const [events] = useState<CustomEvent[]>(
-    initialEvents.map((e) => ({
+    initialEvents.map((e, index) => ({
       ...e,
       start: new Date(e.start),
       end: new Date(e.end),
+      id: `${e.id}-${e.type}-${index}`, // ensures uniqueness
     }))
   );
 

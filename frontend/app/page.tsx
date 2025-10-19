@@ -53,8 +53,11 @@ export default async function DashboardPage() {
     location: e.location ?? "",
   }));
 
-  const allTasks: TaskCard[] = [...cwTasks, ...evTasks];
+  const courseworkEvents = cwTasks.map(e => ({ ...e, id: `cw-${e.uuid}` }));
+  const uniEvents =evTasks.map(e => ({ ...e, id: `ev-${e.uuid}` }));
+  const allEvents = [...courseworkEvents, ...uniEvents];
+
 
   // ✅ Pass to Client Component
-  return <DashboardClient initialTasks={allTasks} />;
+  return <DashboardClient initialTasks={allEvents} />;
 }
