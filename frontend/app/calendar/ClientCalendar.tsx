@@ -98,6 +98,13 @@ export default function CalendarClient({ initialEvents }: Props) {
       </div>
 
       <EventModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
-    </div>
-  );
-}
+          
+
+      
+        </div>
+      )}
+
+    
+    
+    
+    
