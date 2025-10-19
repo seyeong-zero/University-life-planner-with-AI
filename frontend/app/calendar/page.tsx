@@ -3,7 +3,8 @@ import CalendarClient from "./ClientCalendar";
 
 interface TaskEvent {
   title: string;
-  deadline: string;          
+  start: Date;
+  end: Date;          
   type: string;         
   description: string;  
   strictness: boolean;
@@ -22,16 +23,15 @@ export default async function CalendarPage() {
   }
 
   // map dates to strings
-  const events: TaskEvent[] =
-    data?.map((e: any) => ({
-      title: e.title,
-      type: e.type,
-      start: e.start,
-      deadline:e.string,
-      description: e.description,
-      strictness: e.strictness,
-    })) || [];
+  const events: TaskEvent[] = (data || []).map(e => ({
+    title: e.title,
+    start: new Date(e.deadline),
+    end: new Date(e.deadline),
+    description: e.description,
+    type: e.type,
+    strictness: e.strictness,
+  }));
 
-  return <CalendarClient initialEvents={events as any[]} />;
+  return <CalendarClient initialEvents={events as any} />;
 }
 
