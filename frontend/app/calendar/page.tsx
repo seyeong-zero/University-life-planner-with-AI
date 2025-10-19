@@ -9,6 +9,7 @@ interface TaskEvent {
   type: string;
   description: string;
   strictness: boolean;
+  est_hours?: number;
 }
 
 export default async function CalendarPage() {
@@ -31,8 +32,9 @@ export default async function CalendarPage() {
     start: new Date(e.deadline),
     end: new Date(e.deadline),
     description: e.description,
-    type: "Coursework",
+    type: "Work",
     strictness: e.strictness,
+    est_hours: Number(e.est_hours ?? 0),
   }));
 
   const uniEvents: TaskEvent[] = (ev || []).map((e) => ({
