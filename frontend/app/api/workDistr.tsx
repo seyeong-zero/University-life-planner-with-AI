@@ -14,7 +14,7 @@ const prompt = "Create a timeline for a student using the inputs with the follow
 const formatting = " Use the following output format: 'taskID, startTime, stopTime' so that the number of hours required to work of each work is distributed well.";
 const clean = "Only output the final result in the format: 'taskID, startTime, stopTime'. One session per line. Do not add anything else. Do not add padding. ";
 
-export async function test() {
+export async function reSchedule() {
   console.log("Gemini api called");
   // fetch tasks
   const { data: data_cw, error: error_cw } = await supabase
