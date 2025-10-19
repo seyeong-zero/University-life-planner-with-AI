@@ -1,6 +1,7 @@
 import { GoogleGenAI } from "@google/genai";
 import { supabase } from "../../lib/supabaseClient";
 import { se } from "date-fns/locale";
+import { log } from "console";
 
 // getting api
 const ai = new GoogleGenAI({ apiKey: "AIzaSyBEiKusGv-8XGvTu8xwPVryL_v6ZWPx6SY" });
@@ -36,7 +37,7 @@ export async function reSchedule() {
     data_string += item.id + ", ";
     data_string += String(item.deadline).substring(0,16) + ", ";
     data_string += item.strictness + ", ";
-    data_string += item.est_hours + "; ";
+    data_string += (parseInt(item.est_hours)-parseInt(item.hour)) + "; ";
   })
   data_string += " event: "
   data_ev?.forEach((item) => {
