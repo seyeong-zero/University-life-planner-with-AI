@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "@google/genai": "^1.25.0",
     "@supabase/supabase-js": "^2.75.1",
     "date-fns": "^4.1.0",
     "lucide-react": "^0.546.0",

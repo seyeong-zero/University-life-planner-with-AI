@@ -1,3 +1,4 @@
+"use client";
 
 import React from "react";
 import { supabase } from "@/lib/supabaseClient";
@@ -7,29 +8,29 @@ interface WorkModalProps {
   onClose: () => void;
 }
 
-export default function WorktModal({
-    isOpen,
-    onClose,
-  }: WorkModalProps) {
+export default function WorkModal({ isOpen, onClose }: WorkModalProps) {
   const [form, setForm] = React.useState({
     title: "",
     type: "",
     description: "",
     deadline: "",
+    startTime: "",
+    endTime: "",
     estimatedTime: 1,
     strictness: false,
   });
 
   const handleAddEvent = async () => {
-    // Insert into Supabase
     const { data, error } = await supabase.from("coursework").insert([
       {
         title: form.title,
         type: form.type,
         description: form.description,
-        deadline: form.deadline,
+        deadline: form.deadline || form.startTime,
         est_hours: form.estimatedTime,
         strictness: form.strictness,
+        start_at: form.startTime || null,
+        end_at: form.endTime || null,
       },
     ]);
 
@@ -42,10 +43,12 @@ export default function WorktModal({
         type: "",
         description: "",
         deadline: "",
+        startTime: "",
+        endTime: "",
         estimatedTime: 1,
         strictness: false,
       });
-
+      onClose();
     }
   };
 
@@ -88,50 +91,91 @@ export default function WorktModal({
           onChange={(e) => setForm({ ...form, description: e.target.value })}
         />
 
-        {/* Deadline */}
-        <input
-          type="datetime-local"
-          className="w-full p-2 rounded-lg border border-[var(--color-c)] focus:outline-none focus:ring-2 focus:ring-[var(--color-b)]"
-          value={form.deadline}
-          onChange={(e) => setForm({ ...form, deadline: e.target.value })}
-        />
-
-        {/* Estimated Completion Time */}
-        <p>
-          Estimated number of hours to complete
-        </p>
-        <input
-          type="number"
-          min={0.5}
-          step={0.5}
-          className="w-full p-2 rounded-lg border border-[var(--color-c)] focus:outline-none focus:ring-2 focus:ring-[var(--color-b)]"
-          value={form.estimatedTime}
-          onChange={(e) =>
-            setForm({ ...form, estimatedTime: parseFloat(e.target.value) })
-          }
-        />
-
-        {/* Strictness Toggle */}
-        <div className="flex items-center justify-between">
-          <label className="text-sm font-medium text-[var(--color-e)]">
-            Strict Mode
-          </label>
-          <button
-            type="button"
-            className={`w-12 h-6 flex items-center rounded-full p-1 transition-all ${
-              form.strictness ? "bg-[var(--color-d)]" : "bg-[var(--color-c)]"
-            }`}
-            onClick={() =>
-              setForm((prev) => ({ ...prev, strictness: !prev.strictness }))
-            }
-          >
-            <span
-              className={`w-4 h-4 bg-white rounded-full shadow-md transform transition-transform ${
-                form.strictness ? "translate-x-6" : "translate-x-0"
-              }`}
+        {/* Conditional Fields */}
+        {form.type === "Work" && (
+          <>
+            {/* Estimated Time */}
+            <p>Estimated hours to complete:</p>
+            <input
+              type="number"
+              min={0.5}
+              step={0.5}
+              className="w-full p-2 rounded-lg border border-[var(--color-c)] focus:outline-none focus:ring-2 focus:ring-[var(--color-b)]"
+              value={form.estimatedTime}
+              onChange={(e) =>
+                setForm({ ...form, estimatedTime: parseFloat(e.target.value) })
+              }
             />
-          </button>
-        </div>
+
+            {/* Strictness */}
+            <div className="flex items-center justify-between">
+              <label className="text-sm font-medium text-[var(--color-e)]">
+                Strict Mode
+              </label>
+              <button
+                type="button"
+                className={`w-12 h-6 flex items-center rounded-full p-1 transition-all ${
+                  form.strictness ? "bg-[var(--color-d)]" : "bg-[var(--color-c)]"
+                }`}
+                onClick={() =>
+                  setForm((prev) => ({ ...prev, strictness: !prev.strictness }))
+                }
+              >
+                <span
+                  className={`w-4 h-4 bg-white rounded-full shadow-md transform transition-transform ${
+                    form.strictness ? "translate-x-6" : "translate-x-0"
+                  }`}
+                />
+              </button>
+            </div>
+
+            {/* Deadline */}
+            <input
+              type="datetime-local"
+              className="w-full p-2 rounded-lg border border-[var(--color-c)] focus:outline-none focus:ring-2 focus:ring-[var(--color-b)]"
+              value={form.deadline}
+              onChange={(e) => setForm({ ...form, deadline: e.target.value })}
+            />
+          </>
+        )}
+
+        {form.type === "Exam" && (
+          <input
+            type="datetime-local"
+            className="w-full p-2 rounded-lg border border-[var(--color-c)] focus:outline-none focus:ring-2 focus:ring-[var(--color-b)]"
+            value={form.deadline}
+            onChange={(e) => setForm({ ...form, deadline: e.target.value })}
+          />
+        )}
+
+        {form.type === "Event" && (
+          <input
+          type="text"
+          placeholder="Location"
+          className="w-full p-2 rounded-lg border border-[var(--color-c)] focus:outline-none focus:ring-2 focus:ring-[var(--color-b)]"
+          value={form.title}
+          onChange={(e) => setForm({ ...form, title: e.target.value })}
+        />
+        )}
+
+        {form.type === "Event" && (
+          <>
+            <input
+              type="datetime-local"
+              placeholder="Start time"
+              className="w-full p-2 rounded-lg border border-[var(--color-c)] focus:outline-none focus:ring-2 focus:ring-[var(--color-b)]"
+              value={form.startTime}
+              onChange={(e) => setForm({ ...form, startTime: e.target.value })}
+            />
+            <input
+              type="datetime-local"
+              placeholder="End time"
+              className="w-full p-2 rounded-lg border border-[var(--color-c)] focus:outline-none focus:ring-2 focus:ring-[var(--color-b)]"
+              value={form.endTime}
+              onChange={(e) => setForm({ ...form, endTime: e.target.value })}
+            />
+          </>
+        )}
 
         {/* Buttons */}
         <div className="flex justify-end gap-2 pt-4">
